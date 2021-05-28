@@ -30,7 +30,8 @@ public class AudioStore {
             .build();
 
     private PersistentEntityStore entityStore(String key) {
-        return stores.get(key, k -> PersistentEntityStores.newInstance("data/" + key + "/.audio"));
+        // ~/ is needed for linux / AWS environments
+        return stores.get(key, k -> PersistentEntityStores.newInstance("~/data/" + key + "/.audio"));
     }
 
     private final ConcurrentLinkedQueue<KeyAndPacket> toSave;
