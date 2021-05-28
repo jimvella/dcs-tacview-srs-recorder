@@ -1,0 +1,129 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <style>
+        #timeline text[fill="#3399cc"] {
+          cursor: pointer;
+          text-decoration: underline;
+        }
+    </style>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script th:inline="javascript">
+        var value = /*[[${data}]]*/ [];
+        var from = /*[[${from}]]*/ [];
+        var until = /*[[${until}]]*/ [];
+    </script>
+    <script type="text/javascript">
+        //https://stackoverflow.com/questions/63064216/adding-hyperlink-to-google-chart-timeline-rowlabel
+
+        google.charts.load('current', {'packages':['timeline']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+          var data = new google.visualization.DataTable({
+
+            cols: [
+              {id: 'team', label: 'Team', type: 'string'},
+              {id: 'start', label: 'Season Start Date', type: 'date'},
+              {id: 'end', label: 'Season End Date', type: 'date'}
+            ],
+
+            rows: value
+          });
+
+          var options = {
+            height: 450,
+            timeline: {
+              groupByRowLabel: true,
+              rowLabelStyle: {
+                color: '#3399cc'
+              }
+            },
+            hAxis: {
+              minValue: eval("new " + from),
+              maxValue: eval("new " + until)
+            }
+          };
+
+          var chart = new google.visualization.Timeline(document.getElementById('timeline'));
+
+          var container = document.getElementById('timeline');
+
+          function readyHandler() {
+            var labels = container.getElementsByTagName('text');
+            Array.prototype.forEach.call(labels, function(label) {
+              if (label.getAttribute('fill') === options.timeline.rowLabelStyle.color) {
+                label.addEventListener('click', clickHandler);
+              }
+            });
+          }
+
+          function clickHandler(sender) {
+            var rowLabel = sender.target.textContent;
+            var dataRows = data.getFilteredRows([{
+              column: 0,
+              value: rowLabel
+            }]);
+            if (dataRows.length > 0) {
+              var link = data.getProperty(dataRows[0], 0, 'link');
+              window.open(link, '_blank');
+            }
+          }
+
+          google.visualization.events.addListener(chart, 'ready', readyHandler);
+          chart.draw(data, options);
+        }
+    </script>
+</head>
+<body>
+<h1>SRS Recording Service</h1>
+<p>
+    Records SRS audio. The idea is to be able to download intervals for use with Tacview.
+    See <a href="https://tacview.fandom.com/wiki/Synchronized_Audio/Video_Playback">https://tacview.fandom.com/wiki/Synchronized_Audio/Video_Playback</a>
+</p>
+<h2>Recorders</h2>
+<th:block th:each="receiver : ${receivers}">
+    <form th:action="@{${baseUrl + '/srs/' + receiver.getGuid()}}" method="POST" enctype='multipart/form-data'>
+        <label th:text="${receiver.toString()}">...</label>
+        <input type="submit" value="Cancel">
+    </form>
+</th:block>
+
+<th:block th:each="discordSession : ${discordSessions}">
+    <form th:action="@{${baseUrl + '/srs/'}}" method="POST" enctype='multipart/form-data'>
+        <label th:text="${discordSession.toString()}">...</label>
+        <input type="submit" value="Cancel">
+    </form>
+</th:block>
+
+<th:block th:if="${tacviewRecorder!=null}">
+    <form th:action="@{${baseUrl + '/tacview/cancel'}}" method="POST" enctype='multipart/form-data'>
+        <label th:text="${'Tacview recorder'}">...</label>
+        <input type="submit" value="Cancel">
+    </form>
+</th:block>
+
+<th:block th:if="${tacviewRecorder==null}">
+    <h2>Set Tacview recorder</h2>
+    <form th:action="@{${baseUrl + '/tacview'}}" method="POST" enctype='multipart/form-data'>
+        <label for="host">Host:</label>
+        <input type="text" id="host" name="host" value="">
+        <label for="port">Port:</label>
+        <input type="text" id="port" name="port" value="42674">
+        <input type="submit">
+    </form>
+</th:block>
+
+<h2>Add SRS recorder</h2>
+<form th:action="@{${baseUrl + '/srs'}}" method="POST" enctype='multipart/form-data'>
+    <label for="host">Host:</label>
+    <input type="text" id="host" name="host" value="">
+    <label for="port">Port:</label>
+    <input type="text" id="port" name="port" value="5002">
+    <label for="frequency">Frequency:</label>
+    <input type="text" id="frequency" name="frequency" value="305000000">
+    <input type="submit">
+</form>
+
+<div id="timeline" style="height: 180px;"></div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-package dcstacviewsrsrecorder.dcstacviewsrsrecorder;
+package org.dcstacviewsrsrecorder;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

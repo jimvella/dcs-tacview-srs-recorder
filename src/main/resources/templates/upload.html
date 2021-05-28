@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<body>
+
+<h1>SRS Broadcast Service</h1>
+
+<p>Supply a link or upload an audio file and have it broadcast to the specified <a href="https://github.com/ciribob/DCS-SimpleRadioStandalone">DCS SRS</a> service.</p>
+
+<p>
+    Supports sources YouTube, SoundCloud, Bandcamp, Vimeo, Twitch streams, Local files, HTTP URLs,
+    and formats MP3, FLAC, WAV, Matroska/WebM (AAC, Opus or Vorbis codecs), MP4/M4A (AAC codec), OGG streams (Opus, Vorbis and FLAC codecs), AAC streams, Stream playlists (M3U and PLS)
+</p>
+
+<form th:action="@{/broadcast/upload}" method="POST" enctype='multipart/form-data'>
+    <label for="host">Host:</label><br>
+    <input type="text" id="host" name="host" value=""><br>
+    <label for="port">Port:</label><br>
+    <input type="text" id="port" name="port" value="5002"><br>
+    <label for="frequency">Frequency:</label><br>
+    <input type="text" id="frequency" name="frequency" value="305000000"><br>
+    <label for="url">URL:</label><br>
+    <input type="text" id="url" name="url" value=""><br>
+    <input type="file" name="file">
+    <input type="submit">
+</form>
+
+</body>
+</html>

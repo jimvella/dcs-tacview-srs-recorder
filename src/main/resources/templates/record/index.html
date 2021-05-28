@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<body>
+
+<h1>Create / find a database</h1>
+
+<form th:action="@{/record}" method="POST" enctype='multipart/form-data'>
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name" value=""><br>
+    <input type="submit">
+</form>
+
+</body>
+</html>
